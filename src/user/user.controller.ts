@@ -14,10 +14,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UnauthorizedException } from '@nestjs/common';
 import { RedisService } from 'src/redis/redis.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UserCreatedEvent } from 'src/event/user-created.event';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   @Inject(RedisService)
   private redisService: RedisService;
@@ -43,6 +48,11 @@ export class UserController {
     const user = await this.userService.findUserByEmail(email);
 
     console.log(user);
+
+    this.eventEmitter.emit(
+      'user.created',
+      new UserCreatedEvent(user!.username, email),
+    );
 
     return 'success';
   }

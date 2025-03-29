@@ -35,7 +35,7 @@ export class UserService {
   }
 
   findUserByEmail(email: string) {
-    this.entityManager.findOne(User, {
+    return this.entityManager.findOne(User, {
       where: {
         email,
       },

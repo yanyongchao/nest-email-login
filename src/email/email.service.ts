@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createTransport, Transporter } from 'nodemailer';
-
+import { OnEvent } from '@nestjs/event-emitter';
+import { UserCreatedEvent } from 'src/event/user-created.event';
 @Injectable()
 export class EmailService {
   transporter: Transporter;
@@ -28,5 +29,10 @@ export class EmailService {
       subject,
       html,
     });
+  }
+
+  @OnEvent('user.created')
+  handleUserCreated(event: UserCreatedEvent) {
+    console.log(`📩 发送邮件给用户: ${event.email}`);
   }
 }
